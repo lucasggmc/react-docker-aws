@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+
 jobs:
   ci:
     name: Testing Application and creating build artifact
@@ -45,27 +46,28 @@ jobs:
         with:
           name: build-artifact
           path: build
-      
-    cd:
-      name: Deploy Application
-      needs: setup
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
 
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: build-artifact
-        path: build
+  cd:
+    name: Deploy Application
+    needs: setup
+    runs-on: ubuntu-latest
 
-    - name: Deploy S3
-      uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --acl public-read --follow-symlinks --delete
-      env:
-        AWS_S3_BUCKET: react-docker-aws
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-        AWS_REGION: us-east-1
-        SOURCE_DIR: build
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifact
+          path: build
+
+      - name: Deploy S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: react-docker-aws
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+    AWS_REGION: us-east-1
+    SOURCE_DIR: build
