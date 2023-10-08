@@ -6,7 +6,7 @@ on:
       - "main"
 
 jobs:
-  ci:
+  build:
     name: Testing Application and creating build artifact
     runs-on: ubuntu-latest
 
@@ -40,25 +40,6 @@ jobs:
         env:
           REACT_APP_API_URL: "prod"
           REACT_APP_USE_MOCKS: false
-
-      - name: Saving Build as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-artifact
-          path: build
-
-  cd:
-    name: Deploy Application
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: build-artifact
-          path: build
 
       - name: Deploy S3
         uses: jakejarvis/s3-sync-action@master
